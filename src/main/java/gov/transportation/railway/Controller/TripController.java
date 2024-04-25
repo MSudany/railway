@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/trips")
@@ -27,6 +28,15 @@ public class TripController {
     @GetMapping("")
     List<Trip> findAll(){
         return tripRepo.findAll();
+    }
+
+    @GetMapping("/{id}")
+    Trip findById(@PathVariable int tripId) {
+        Optional<Trip> trip = tripRepo.findById(tripId);
+        if (trip.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return trip.get();
     }
 
     @GetMapping("/departure/{departure}/pickUp/{pickUp}/destination/{destination}")

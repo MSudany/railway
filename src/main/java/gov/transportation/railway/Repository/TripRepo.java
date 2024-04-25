@@ -9,12 +9,20 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Repository
 public class TripRepo {
 
     private List<Trip> trips = new ArrayList<>();
+
+    //CREATE OPERATION
+    void createTrip(Trip trip){
+        trips.add(trip);
+    }
+
+    //READ OPERATIONS
 
     public List<Trip> findAll(){
         return trips;
@@ -32,6 +40,11 @@ public class TripRepo {
         return matchingTrips;
     }
 
+    public Optional<Trip> findById(int tripId){
+        return  trips.stream()
+                .filter(trip -> trip.tripId() == tripId)
+                .findFirst();
+    }
 
     public List<Trip> findByDate(LocalDateTime departure) {
         List<Trip> tripsOnDate = new ArrayList<>();
@@ -63,11 +76,20 @@ public class TripRepo {
         return tripsToDestination;
     }
 
+    //UPDATE OPERATION
+    void updateTrip(Trip trip, int tripId){
+
+    }
+
+    //DELETE OPERATION
+
+    //INITIALIZATION
     @PostConstruct
     private void init() {
         Random random = new Random();
         LocalDateTime now = LocalDateTime.now();
         int currentYear = now.getYear();
+        int tripIdCounter = 1; // Start tripId counter from 1
         for (int i = 0; i < 200; i++) {
             Location pickUp = Location.values()[random.nextInt(Location.values().length)];
             Location destination;
@@ -83,10 +105,14 @@ public class TripRepo {
             double price = Math.round((50 + random.nextDouble() * 300) * 100.0) / 100.0; // Round price to 2 decimal places
             Class nClass = Class.values()[random.nextInt(Class.values().length)];
 
-            Trip trip = new Trip(pickUp, destination, departure, price, nClass);
+            // Generate unique tripId
+            int tripId = tripIdCounter++;
+
+            Trip trip = new Trip(tripId, pickUp, destination, departure, price, nClass);
             trips.add(trip);
         }
     }
+
 
 
 
