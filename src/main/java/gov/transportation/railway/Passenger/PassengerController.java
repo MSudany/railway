@@ -1,10 +1,10 @@
-package gov.transportation.railway.Controller;
+package gov.transportation.railway.Passenger;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/tickets")
-public class TicketController {
+@RequestMapping("/api/passengers")
+public class PassengerController {
 
 }

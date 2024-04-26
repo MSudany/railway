@@ -1,4 +1,4 @@
-package gov.transportation.railway.Repository;
+package gov.transportation.railway.Trip;
 
 import gov.transportation.railway.Enum.Class;
 import gov.transportation.railway.Enum.Location;
@@ -77,11 +77,18 @@ public class TripRepo {
     }
 
     //UPDATE OPERATION
-    void updateTrip(Trip trip, int tripId){
 
+    void updateTrip(Trip trip, int tripId){
+        Optional<Trip> existingTrip = findById(tripId);
+        if(existingTrip.isPresent()){
+            trips.set(trips.indexOf(existingTrip.get()), trip);
+        }
     }
 
     //DELETE OPERATION
+    void deleteTrip(int tripId){
+        trips.removeIf(trip -> trip.tripId() == tripId);
+    }
 
     //INITIALIZATION
     @PostConstruct

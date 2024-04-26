@@ -1,4 +1,4 @@
-package gov.transportation.railway.Repository;
+package gov.transportation.railway.Passenger;
 
 import org.springframework.stereotype.Repository;
 

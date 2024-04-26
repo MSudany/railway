@@ -1,13 +1,10 @@
-package gov.transportation.railway.Controller;
+package gov.transportation.railway.Trip;
 
 import gov.transportation.railway.Enum.Location;
 import gov.transportation.railway.Record.Trip;
-import gov.transportation.railway.Repository.TripRepo;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -24,6 +21,13 @@ public class TripController {
     public TripController(TripRepo tripRepo){
         this.tripRepo = tripRepo;
     }
+
+    // POST (Create Trip)
+    void createTrip(Trip trip){
+        tripRepo.createTrip(trip);
+    }
+
+    // READ OPERATIONS
 
     @GetMapping("")
     List<Trip> findAll(){
@@ -79,5 +83,19 @@ public class TripController {
         return tripsToDestination;
     }
 
+
+    // PUT (Update Trip)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/update/{tripId}")
+    void updateTrip(@Valid @RequestBody Trip trip, @PathVariable int tripId){
+        tripRepo.updateTrip(trip, tripId);
+    }
+
+    // DELETE (Delete Trip)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/delete/{tripId}")
+    void deleteTrip(int tripId){
+        tripRepo.deleteTrip(tripId);
+    }
 
 }
