@@ -1,13 +1,11 @@
 package gov.transportation.railway.Trip;
 
-import gov.transportation.railway.Enum.Location;
-import gov.transportation.railway.Record.Trip;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,95 +14,70 @@ import java.util.Optional;
 public class TripController {
 
 
-    private final TripRepo tripRepo;
+    private final TripService tripService;
 
-    public TripController(TripRepo tripRepo){
-        this.tripRepo = tripRepo;
+    public TripController(TripService tripService){
+        this.tripService = tripService;
     }
 
+
     // POST (Create Trip)
-//    void createTrip(Trip trip){
-//        tripRepo.createTrip(trip);
-//    }
+
+    @PostMapping("")
+    public ResponseEntity<Void> createTrip(@Valid @RequestBody Trip trip) throws Exception {
+        tripService.create(trip);
+        return ResponseEntity.status(HttpStatus.CREATED).build(); // Return 201 Created
+    }
+
 
     // READ OPERATIONS
 
     @GetMapping("")
-    List<Trip> findAll(){
-        return tripRepo.findAll();
+    ResponseEntity<List<Trip>> findAll(){
+        List<Trip> trips = tripService.findAll();
+        return ResponseEntity.ok(trips);
     }
 
     @GetMapping("/{tripId}")
-    Trip findById(@PathVariable Integer tripId) {
-        Optional<Trip> trip = tripRepo.findById(tripId);
-        if (trip.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return trip.get();
+    ResponseEntity<Trip> findById(@PathVariable Integer tripId) {
+        Trip trip = tripService.findById(tripId);
+        return ResponseEntity.ok(trip);
     }
-//
-//    @GetMapping("/departure/{departure}/pickUp/{pickUp}/destination/{destination}")
-//    public List<Trip> findTrips(
-//            @PathVariable LocalDateTime departure,
-//            @PathVariable Location pickUp,
-//            @PathVariable Location destination) {
-//        List<Trip> matchingTrips = tripRepo.findTrips(departure, pickUp, destination);
-//        if (matchingTrips.isEmpty()){
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//        return matchingTrips;
-//    }
-//
-//    @GetMapping("/departure/{departure}")
-//    public List<Trip> findByDate(@PathVariable String departure) {
-//        LocalDateTime departureTime = LocalDateTime.parse(departure);
-//        List<Trip> tripsOnDate = tripRepo.findByDate(departureTime);
-//        if (tripsOnDate.isEmpty()){
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//        return tripsOnDate;
-//    }
-//
-//    @GetMapping("/pickUp/{pickUp}")
-//    public List<Trip> findByPickUp(@PathVariable Location pickUp) {
-//        List<Trip> tripsAtPickUp = tripRepo.findByPickUp(pickUp);
-//        if (tripsAtPickUp.isEmpty()) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//        return tripsAtPickUp;
-//    }
-//
-//    @GetMapping("/destination/{destination}")
-//    public List<Trip> findByDestination(@PathVariable Location destination) {
-//        List<Trip> tripsToDestination = tripRepo.findByDestination(destination);
-//        if (tripsToDestination.isEmpty()) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//        return tripsToDestination;
-//    }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    void create(@Valid @RequestBody Trip trip) {
-        tripRepo.create(trip);
+    @GetMapping("/pickup/{pickUp}")
+    ResponseEntity<List<Trip>> findAllByPickUp(@PathVariable String pickUp){
+        List<Trip> trips = tripService.findAllByPickUp(pickUp);
+        return ResponseEntity.ok(trips);
     }
+
+    @GetMapping("/destination/{destination}")
+    ResponseEntity<List<Trip>> findAllByDestination(@PathVariable String destination){
+        List<Trip> trips = tripService.findAllByDestination(destination);
+        return ResponseEntity.ok(trips);
+    }
+
+    @GetMapping("/departure/{departure}")
+    ResponseEntity<List<Trip> >findAllByDeparture(@PathVariable String departure){
+        List<Trip> trips = tripService.findAllByDeparture(departure);
+        return ResponseEntity.ok(trips);
+    }
+
 
     // PUT (Update Trip)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+
     @PutMapping("/update/{tripId}")
-    void update(@Valid @RequestBody Trip trip, @PathVariable Integer tripId){
-        tripRepo.update(trip, tripId);
+    ResponseEntity<String> update(@Valid @RequestBody Trip updatedTrip, @PathVariable Integer tripId) throws Exception {
+        tripService.update(updatedTrip, tripId);
+        return ResponseEntity.ok().body("Trip successfully updated. ID has been changed!");
     }
+
 
     // DELETE (Delete Trip)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/delete/{tripId}")
-    void delete(@PathVariable Integer tripId){
-        tripRepo.delete(tripId);
-    }
 
-//    List<Trip> findByPickUp(@RequestParam String location) {
-//        return tripRepo.findByPickUp(location);
-//    }
+    @DeleteMapping("/delete/{tripId}")
+    ResponseEntity<Void> delete(@PathVariable Integer tripId) throws Exception {
+        tripService.delete(tripId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 
 }
